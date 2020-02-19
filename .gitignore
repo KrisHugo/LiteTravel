@@ -1,0 +1,6 @@
+# Project exclude paths
+/litetravel-parent/litetravel-common/target/
+/litetravel-parent/litetravel-eureka/target/
+/litetravel-parent/litetravel-service/litetravel-service-hotel/target/
+/litetravel-parent/litetravel-service/litetravel-service-region/target/
+/litetravel-parent/litetravel-service-api/litetravel-service-region-api/target/

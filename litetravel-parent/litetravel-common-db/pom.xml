@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>litetravel-parent</artifactId>
+        <groupId>com.LiteTravel</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+    <artifactId>litetravel-common-db</artifactId>
+    <description>
+        所有数据库依赖包汇总
+    </description>
+
+
+    <!--依赖-->
+    <dependencies>
+        <!--对litetravel-common的依赖-->
+        <dependency>
+            <groupId>com.LiteTravel</groupId>
+            <artifactId>litetravel-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!-- 本来想用通用mapper的，但是发现可配置的api-->
+        <!--通用mapper起步依赖-->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <!--MySQL数据库驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--mybatis分页插件-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.13</version>
+        </dependency>
+    </dependencies>
+
+</project>
