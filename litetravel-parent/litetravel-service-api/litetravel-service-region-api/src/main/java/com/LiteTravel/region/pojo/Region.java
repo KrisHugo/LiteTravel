@@ -20,23 +20,23 @@ public class Region {
     private Integer id;
     @Column(name = "name")
     private String name;
-
+    @Column(name = "pid")
     private Integer pid;
-
+    @Column(name = "sname")
     private String sname;
-
+    @Column(name = "level")
     private Integer level;
-
+    @Column(name = "citycode")
     private String citycode;
-
+    @Column(name = "yzcode")
     private String yzcode;
-
+    @Column(name = "mername")
     private String mername;
-
+    @Column(name = "lng")
     private Float lng;
-
+    @Column(name = "lat")
     private Float lat;
-
+    @Column(name = "pinyin")
     private String pinyin;
 
 }
