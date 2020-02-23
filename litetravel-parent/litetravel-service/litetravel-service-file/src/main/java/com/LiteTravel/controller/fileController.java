@@ -29,8 +29,9 @@ public class fileController {
 
         // 用Util将文件传输到FastDFS中, 并且获取存储位置信息, 可用于保存至数据库
         String[] result = FastDFSUtil.upload(fastDFSFile);
-        // 拼接成请求url
-        String storeUrl = "http://192.168.0.1:8080/" + result[0] + "/" + result[1];
+        // 拼接成请求url,
+        // answer 使用Util直接获取ip和port, 防止后期需要更改!
+        String storeUrl = FastDFSUtil.getTrackerInfo() + "/" + result[0] + "/" + result[1];
         return new Result(true, StatusCode.OK, "上传成功!", storeUrl);
     }
 }
