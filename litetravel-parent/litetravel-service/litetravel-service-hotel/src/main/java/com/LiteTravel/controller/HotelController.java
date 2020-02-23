@@ -26,4 +26,6 @@ public class HotelController {
         boolean flag = hotel != null;
         return new Result<>(flag, flag?20000:20006, "查询对应酒店信息成功", hotel);
     }
+
+
 }

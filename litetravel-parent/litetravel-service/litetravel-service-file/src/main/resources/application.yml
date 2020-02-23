@@ -1,0 +1,19 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB # 测试用最大文件大小
+      max-request-size: 10MB # 测试用最大请求文件大小
+  application:
+    name: file
+server:
+  port: 18080 # 该服务的请求端口
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+  instance:
+    prefer-ip-address: true
+#
+feign:
+  hystrix:
+    enabled: true

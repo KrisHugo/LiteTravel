@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /****
- * @Author:www.itheima.com
  * @Description:返回实体Bean
  *****/
 @ApiModel(description = "Result",value = "Result")
