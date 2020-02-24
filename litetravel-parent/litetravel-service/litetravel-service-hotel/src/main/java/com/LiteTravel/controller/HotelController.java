@@ -1,6 +1,5 @@
 package com.LiteTravel.controller;
 
-import com.LiteTravel.hotel.pojo.Hotel;
 import com.LiteTravel.service.HotelService;
 import entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,5 @@
 package com.LiteTravel.service;
 
-import com.LiteTravel.hotel.pojo.Hotel;
-
 import java.util.List;
 
 public interface HotelService {

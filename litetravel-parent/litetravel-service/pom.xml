@@ -16,6 +16,7 @@
         <module>litetravel-service-hotel</module>
         <module>litetravel-service-region</module>
         <module>litetravel-service-file</module>
+        <module>litetravel-service-user</module>
     </modules>
 
     <dependencies>
