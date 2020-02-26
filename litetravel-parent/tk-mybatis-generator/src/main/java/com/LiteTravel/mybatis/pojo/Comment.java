@@ -1,4 +1,4 @@
-package com.LiteTravel.mybatis.model;
+package com.LiteTravel.mybatis.pojo;
 
 import java.util.Date;
 import javax.persistence.*;

@@ -1,5 +1,7 @@
 package com.LiteTravel.hotel.pojo;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "`travel_hotel`")
@@ -11,6 +13,8 @@ public class Hotel {
      *
      * @mbg.generated Mon Feb 24 17:39:19 CST 2020
      */
+    @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer hotelId;
 
     /**

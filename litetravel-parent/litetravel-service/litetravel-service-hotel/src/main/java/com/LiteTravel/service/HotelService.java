@@ -1,15 +1,8 @@
 package com.LiteTravel.service;
 
-import java.util.List;
+import com.LiteTravel.hotel.pojo.Hotel;
+import interfaces.MyService;
 
-public interface HotelService {
-    /*
-     * 查询所有
-     * */
-    List<Hotel> findAll();
+public interface HotelService extends MyService<Hotel> {
 
-    /*
-     * 根据主键查询
-     * */
-    Hotel findById(Integer hotelId);
 }

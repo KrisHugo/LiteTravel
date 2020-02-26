@@ -1,5 +1,7 @@
 package com.LiteTravel.hotel.pojo;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,6 +15,8 @@ public class HotelOrder {
      *
      * @mbg.generated Mon Feb 24 17:39:19 CST 2020
      */
+    @Id
+    @GeneratedValue(generator = "JDBC")
     private Integer orderId;
 
     /**

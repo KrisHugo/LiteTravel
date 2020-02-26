@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tk-mybatis-generator</artifactId>
+    <description>
+        TK mybatis Generator 插件，非轻旅核心微服务, pojo, mapper报错是正常的
+    </description>
     <dependencies>
 <!--        <dependency>
             <groupId>com.LiteTravel</groupId>
@@ -33,8 +36,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11.0.3</source>
-                    <target>11.0.3</target>
+                    <source>1.8.0_231</source>
+                    <target>1.8.0_231</target>
                 </configuration>
             </plugin>
             <plugin>
