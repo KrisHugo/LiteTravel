@@ -2,7 +2,7 @@ package com.LiteTravel.hotel.pojo;
 
 import javax.persistence.Table;
 
-@Table(name = "`travel_room_bed`")
+@Table(name = "travel_room_bed")
 public class RoomBedMap {
     /**
      *

@@ -1,7 +1,6 @@
 package com.LiteTravel.controller;
 
 import com.LiteTravel.hotel.pojo.Bed;
-import com.LiteTravel.hotel.pojo.Hotel;
 import com.LiteTravel.service.BedService;
 import com.github.pagehelper.PageInfo;
 import entity.Result;

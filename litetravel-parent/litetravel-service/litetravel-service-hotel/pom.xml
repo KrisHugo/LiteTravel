@@ -17,6 +17,11 @@
             <artifactId>litetravel-service-hotel-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.LiteTravel</groupId>
+            <artifactId>litetravel-service-region-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,8 +1,9 @@
 package com.LiteTravel.region.pojo;
 
+import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "`global_region`")
+@Table(name = "global_region")
 public class Region {
     /**
      *
@@ -11,6 +12,7 @@ public class Region {
      *
      * @mbg.generated Mon Feb 24 17:39:19 CST 2020
      */
+    @Id
     private Integer id;
 
     /**

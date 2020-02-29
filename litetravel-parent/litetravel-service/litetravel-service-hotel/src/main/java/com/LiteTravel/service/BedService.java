@@ -1,7 +1,7 @@
 package com.LiteTravel.service;
 
 import com.LiteTravel.hotel.pojo.Bed;
-import interfaces.MyService;
+import interfaces.BeanService;
 
-public interface BedService extends MyService<Bed> {
+public interface BedService extends BeanService<Bed> {
 }

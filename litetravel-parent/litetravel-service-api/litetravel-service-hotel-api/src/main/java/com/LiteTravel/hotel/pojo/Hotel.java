@@ -4,7 +4,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "`travel_hotel`")
+@Table(name = "travel_hotel")
 public class Hotel {
     /**
      *

@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Table(name = "`travel_hotel_orders`")
+@Table(name = "travel_hotel_orders")
 public class HotelOrder {
     /**
      *

@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-@Table(name = "`travel_hotel_room`")
+@Table(name = "travel_hotel_room")
 public class Room {
     /**
      *

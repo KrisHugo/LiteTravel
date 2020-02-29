@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
-public interface MyService<T> {
+public interface BeanService<T> {
     /*
      * 查询所有
      * */
@@ -31,17 +31,17 @@ public interface MyService<T> {
     T findById(Integer id);
 
     /*
-     * 增加地址
+     * 增加
      * */
     void add(T t);
 
     /*
-     * 修改地址
+     * 修改
      * */
     void update(T t);
 
     /*
-     * 删除地址
+     * 删除
      * */
     void delete(Integer id);
 

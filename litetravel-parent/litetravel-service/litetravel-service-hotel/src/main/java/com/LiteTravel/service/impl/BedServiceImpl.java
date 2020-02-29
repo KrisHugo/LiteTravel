@@ -6,11 +6,13 @@ import com.LiteTravel.service.BedService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
+@Service
 public class BedServiceImpl implements BedService {
     @Autowired
     private BedMapper bedMapper;
