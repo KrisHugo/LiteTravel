@@ -42,14 +42,12 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public List<HotelDTO> findAll() {
-        List<Hotel> hotels = hotelMapper.selectAll();
-        return getHotelDTOs(hotels);
+        return getHotelDTOs(hotelMapper.selectAll());
     }
 
     @Override
     public List<HotelDTO> findList(Hotel hotel) {
-        List<Hotel> hotels = hotelMapper.selectByExample(createExample(hotel));
-        return getHotelDTOs(hotels);
+        return getHotelDTOs(hotelMapper.selectByExample(createExample(hotel)));
     }
 
     @Override
@@ -66,98 +64,14 @@ public class HotelServiceImpl implements HotelService {
         return new PageInfo<>(getHotelDTOs(hotels));
     }
 
-    private List<HotelDTO> getHotelDTOs(List<Hotel> hotels){
-        List<Integer> addressIds = hotels.stream().map(Hotel::getHotelAddress).distinct().collect(Collectors.toList());
-        Example regionExample = new Example(Region.class);
-        Example.Criteria criteria = regionExample.createCriteria();
-        criteria.andIn("id", addressIds);
-        List<Region> regions = regionMapper.selectByExample(regionExample);
-        Map<Integer, String> addressMap = regions.stream().collect(Collectors.toMap(Region::getId, Region::getMername));
-        return hotels.stream().map(hotel -> {
-            String addressString = addressMap.get(hotel.getHotelAddress());
-            return getHotelDTO(hotel, addressString);
-        }).collect(Collectors.toList());
-    }
-
-    private HotelDTO getHotelDTO(Hotel hotel, String addressString){
-        HotelDTO hotelDTO = new HotelDTO();
-        BeanUtils.copyProperties(hotel, hotelDTO);
-        hotelDTO.setHotelAddressString(addressString.substring(addressString.indexOf("省,") + 2));
-        Example roomExample = new Example(Room.class);
-        Example.Criteria criteria = roomExample.createCriteria();
-        criteria.andEqualTo("hotelId", hotel.getHotelId());
-        List<Room> rooms = roomMapper.selectByExample(roomExample);
-        List<RoomDTO> roomDTOs = rooms.stream().map(this::getRoomDTO).collect(Collectors.toList());
-        hotelDTO.setRooms(roomDTOs);
-        return hotelDTO;
-    }
-
-    private RoomDTO getRoomDTO(Room room){
-        RoomDTO roomDTO = new RoomDTO();
-        BeanUtils.copyProperties(room, roomDTO);
-
-        // 获取roomBedMap
-        Example roomBedMapExample = new Example(RoomBedMap.class);
-        roomBedMapExample.createCriteria()
-                .andEqualTo("roomId", room.getRoomId());
-        List<RoomBedMap> roomBedMaps = roomBedMapper.selectByExample(roomBedMapExample);
-        if(roomBedMaps.size() > 0){
-            // 通过roomId找到该room的所有床型
-            List<Integer> bedIds = roomBedMaps.stream().map(RoomBedMap::getBedId).distinct().collect(Collectors.toList());
-            // 获取bed
-            Example bedExample = new Example(Bed.class);
-            bedExample.createCriteria()
-                    .andIn("bedId", bedIds);
-            List<Bed> bedList = bedMapper.selectByExample(bedExample);
-            // 获取bedCount
-            Map<Integer, Integer> bedCountMap = roomBedMaps.stream().collect(Collectors.toMap(RoomBedMap::getBedId, RoomBedMap::getBedCount));
-            // bed和bedCount写入bedDTO
-            List<BedDTO> bedDTOs = bedList.stream().map(bed -> {
-                BedDTO bedDTO = new BedDTO();
-                BeanUtils.copyProperties(bed, bedDTO);
-                bedDTO.setBedCount(bedCountMap.get(bed.getBedId()));
-                return bedDTO;
-            }).collect(Collectors.toList());
-            roomDTO.setBeds(bedDTOs);
-        }
-        return roomDTO;
-    }
-
-    private Example createExample(Hotel hotel){
-        Example example = new Example(Hotel.class);
-        Example.Criteria criteria = example.createCriteria();
-
-        /* 名字相似度筛选(用户提供名字时未必是完整的) */
-        if (!StringUtils.isEmpty(hotel.getHotelName())) {
-            criteria.andLike("hotelName", "%" + hotel.getHotelName() + "%");
-        }
-        /* 所属集团筛选 */
-        if (hotel.getHotelManagerId() != null){
-            criteria.andEqualTo("hotelManagerId", hotel.getHotelManagerId());
-        }
-        /* 地址筛选 */
-        if (hotel.getHotelAddress() != null){
-            criteria.andEqualTo("hotelAddress", hotel.getHotelAddress());
-        }
-        /* 大于等于评分筛选 */
-        if (hotel.getHotelReplyLevel() != null){
-            criteria.andGreaterThanOrEqualTo("hotelReplyLevel", hotel.getHotelReplyLevel());
-        }
-        /* 小于等于最高价格 */
-        if (hotel.getHotelMinPrice() != null){
-            criteria.andLessThanOrEqualTo("hotelMinPrice", hotel.getHotelMinPrice());
-        }
-        /* 大于等于最低价格 */
-        /* 尚未实现 */
-        return example;
-    }
-
     @Override
     public HotelDTO findById(Integer hotelId) {
         Hotel hotel = hotelMapper.selectByPrimaryKey(hotelId);
         return getHotelDTO(hotel, regionMapper.selectByPrimaryKey(hotel.getHotelAddress()).getMername());
     }
-
+    /*
+    * 增删改中仍有Room和Bed的冗余代码, 在考虑要怎么优化
+    * */
     @Override
     public void add(HotelDTO hotelDTO) {
         Hotel hotel = new Hotel();
@@ -282,5 +196,95 @@ public class HotelServiceImpl implements HotelService {
         }
         // 删除酒店本身
         hotelMapper.deleteByPrimaryKey(hotelId);
+    }
+
+    private List<HotelDTO> getHotelDTOs(List<Hotel> hotels){
+        // 获取所有地址
+        List<Integer> addressIds = hotels.stream().map(Hotel::getHotelAddress).distinct().collect(Collectors.toList());
+        Example regionExample = new Example(Region.class);
+        Example.Criteria criteria = regionExample.createCriteria();
+        criteria.andIn("id", addressIds);
+        List<Region> regions = regionMapper.selectByExample(regionExample);
+        // 使用Map存储地址数据以方便后续赋值
+        Map<Integer, String> addressMap = regions.stream().collect(Collectors.toMap(Region::getId, Region::getMername));
+        // 获取所有酒店DTO
+        return hotels.stream().map(hotel -> {
+            String addressString = addressMap.get(hotel.getHotelAddress());
+            // 调用方法转换成HotelDTO
+            return getHotelDTO(hotel, addressString);
+        }).collect(Collectors.toList());
+    }
+
+    private HotelDTO getHotelDTO(Hotel hotel, String addressString){
+        HotelDTO hotelDTO = new HotelDTO();
+        BeanUtils.copyProperties(hotel, hotelDTO);
+        hotelDTO.setHotelAddressString(addressString.substring(addressString.indexOf("省,") + 2));
+        // 保证重用而不是冗余, 使用RoomService获取Room数据
+        /*        Example roomExample = new Example(Room.class);
+        Example.Criteria criteria = roomExample.createCriteria();
+        criteria.andEqualTo("hotelId", hotel.getHotelId());
+        List<Room> rooms = roomMapper.selectByExample(roomExample);
+        List<RoomDTO> roomDTOs = rooms.stream().map(this::getRoomDTO).collect(Collectors.toList());
+        hotelDTO.setRooms(roomDTOs);*/
+        return hotelDTO;
+    }
+    // 将getRoomDTO放在了RoomService
+    /*    private RoomDTO getRoomDTO(Room room){
+            RoomDTO roomDTO = new RoomDTO();
+            BeanUtils.copyProperties(room, roomDTO);
+
+            // 获取roomBedMap
+            Example roomBedMapExample = new Example(RoomBedMap.class);
+            roomBedMapExample.createCriteria()
+                    .andEqualTo("roomId", room.getRoomId());
+            List<RoomBedMap> roomBedMaps = roomBedMapper.selectByExample(roomBedMapExample);
+            if(roomBedMaps.size() > 0){
+                // 通过roomId找到该room的所有床型
+                List<Integer> bedIds = roomBedMaps.stream().map(RoomBedMap::getBedId).distinct().collect(Collectors.toList());
+                // 获取bed
+                Example bedExample = new Example(Bed.class);
+                bedExample.createCriteria()
+                        .andIn("bedId", bedIds);
+                List<Bed> bedList = bedMapper.selectByExample(bedExample);
+                // 获取bedCount
+                Map<Integer, Integer> bedCountMap = roomBedMaps.stream().collect(Collectors.toMap(RoomBedMap::getBedId, RoomBedMap::getBedCount));
+                // bed和bedCount写入bedDTO
+                List<BedDTO> bedDTOs = bedList.stream().map(bed -> {
+                    BedDTO bedDTO = new BedDTO();
+                    BeanUtils.copyProperties(bed, bedDTO);
+                    bedDTO.setBedCount(bedCountMap.get(bed.getBedId()));
+                    return bedDTO;
+                }).collect(Collectors.toList());
+                roomDTO.setBeds(bedDTOs);
+            }
+            return roomDTO;
+        }*/
+    private Example createExample(Hotel hotel){
+        Example example = new Example(Hotel.class);
+        Example.Criteria criteria = example.createCriteria();
+
+        /* 名字相似度筛选(用户提供名字时未必是完整的) */
+        if (!StringUtils.isEmpty(hotel.getHotelName())) {
+            criteria.andLike("hotelName", "%" + hotel.getHotelName() + "%");
+        }
+        /* 所属集团筛选 */
+        if (hotel.getHotelManagerId() != null){
+            criteria.andEqualTo("hotelManagerId", hotel.getHotelManagerId());
+        }
+        /* 地址筛选 */
+        if (hotel.getHotelAddress() != null){
+            criteria.andEqualTo("hotelAddress", hotel.getHotelAddress());
+        }
+        /* 大于等于评分筛选 */
+        if (hotel.getHotelReplyLevel() != null){
+            criteria.andGreaterThanOrEqualTo("hotelReplyLevel", hotel.getHotelReplyLevel());
+        }
+        /* 小于等于最高价格 */
+        if (hotel.getHotelMinPrice() != null){
+            criteria.andLessThanOrEqualTo("hotelMinPrice", hotel.getHotelMinPrice());
+        }
+        /* 大于等于最低价格 */
+        /* 尚未实现 */
+        return example;
     }
 }
