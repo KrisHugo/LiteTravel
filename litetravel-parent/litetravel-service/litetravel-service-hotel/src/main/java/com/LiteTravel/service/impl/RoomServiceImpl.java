@@ -43,55 +43,6 @@ public class RoomServiceImpl implements RoomService {
         return getRoomDTOs(roomMapper.selectByExample(createExample(room)));
     }
 
-    // todo 实际应该修改使用RoomExampleDTO来筛选, 有太多条件单纯使用Room的数据无法解决
-    private Example createExample(Room room) {
-        Example example = new Example(Room.class);
-        Example.Criteria criteria = example.createCriteria();
-        if(room.getHotelId() != null)
-        {
-            criteria.andEqualTo("hotelId", room.getHotelId());
-        }
-        if(!StringUtils.isEmpty(room.getRoomName())){
-            criteria.andLike("roomName", "%" + room.getRoomName() + "%");
-        }
-        // todo 应该是个范围
-        if(room.getRoomPrice() != null){
-            criteria.andLessThanOrEqualTo("roomPrice", room.getRoomPrice());
-        }
-        // todo 查找空余房间? 应该需要更加复杂的算法
-        if(room.getRoomRemaining() != null){
-            criteria.andGreaterThan("roomRemaining", room.getRoomRemaining());
-        }
-        if(room.getRoomCancel() != null){
-            criteria.andEqualTo("roomCancel", room.getRoomCancel());
-        }
-        // todo 应该是个范围
-        if(room.getRoomSize() != null){
-            criteria.andGreaterThan("roomSize", room.getRoomSize());
-        }
-        if(room.getRoomBookMax() != null){
-            criteria.andGreaterThanOrEqualTo("roomBookMax", room.getRoomBookMax());
-        }
-        if(room.getRoomWifi() != null){
-            criteria.andEqualTo("roomWifi", room.getRoomWifi());
-        }
-        // 加床条件筛选
-        if(room.getRoomBedAdd() != null){
-            BigDecimal i = room.getRoomBedAdd();
-            // 判断——不想加床
-            if(i.equals(BigDecimal.valueOf(-1)))
-            {
-                criteria.andEqualTo("roomBedAdd", i);
-            }
-            // ——想要加床
-            else{
-                criteria.andGreaterThanOrEqualTo("roomBedAdd", 0)
-                        .andLessThanOrEqualTo("roomBedAdd", i);
-            }
-        }
-        return example;
-    }
-
     @Override
     public PageInfo<RoomDTO> findPage(Integer page, Integer size) {
         PageHelper.startPage(page, size);
@@ -162,37 +113,40 @@ public class RoomServiceImpl implements RoomService {
             roomMapper.insertSelective(room);
         }
         // 设置床型
-        for (BedDTO bedDTO: roomDTO.getBeds()) {
-            // 需要修改时, 只允许修改房间拥有的床型号以及数量, 因此只允许修改房间与床的联系
-            RoomBedMap roomBedMap = new RoomBedMap();
+        if(roomDTO.getBeds() != null){
             //删除已经在新床型列中不存在的元组
             List<Integer> bedIds = roomDTO.getBeds().stream().map(BedDTO::getBedId).distinct().collect(Collectors.toList());
             Example roomBedMapNotExist = new Example(RoomBedMap.class);
             roomBedMapNotExist.createCriteria().andEqualTo("roomId", room.getRoomId())
                     .andNotIn("bedId", bedIds);
             roomBedMapper.deleteByExample(roomBedMapNotExist);
-            // 如果为旧床型, 更新旧床型
-            Example roomBedMapExist = new Example(RoomBedMap.class);
-            roomBedMapExist.createCriteria().andEqualTo("roomId", room.getRoomId())
-                    .andEqualTo("bedId", bedDTO.getBedId());
-            if(roomBedMapper.selectByExample(roomBedMapExist).size() > 0){
-                roomBedMap.setBedId(bedDTO.getBedId());
-                roomBedMap.setBedCount(bedDTO.getBedCount());
-                Example roomBedMapExample = new Example(RoomBedMap.class);
-                roomBedMapExample.createCriteria().andEqualTo("roomId", room.getRoomId());
-                // 更新旧床型
-                roomBedMapper.updateByExampleSelective(roomBedMap, roomBedMapExample);
-            }
-            // 床型在原来的表中不存在
-            else{
-                // 插入新床型
-                roomBedMap.setRoomId(room.getRoomId());
-                roomBedMap.setBedId(bedDTO.getBedId());
-                roomBedMap.setBedCount(bedDTO.getBedCount());
-                //
-                roomBedMapper.insert(roomBedMap);
+            for (BedDTO bedDTO: roomDTO.getBeds()) {
+                // 需要修改时, 只允许修改房间拥有的床型号以及数量, 因此只允许修改房间与床的联系
+                RoomBedMap roomBedMap = new RoomBedMap();
+                // 如果为旧床型, 更新旧床型
+                Example roomBedMapExist = new Example(RoomBedMap.class);
+                roomBedMapExist.createCriteria().andEqualTo("roomId", room.getRoomId())
+                        .andEqualTo("bedId", bedDTO.getBedId());
+                if(roomBedMapper.selectByExample(roomBedMapExist).size() > 0){
+                    roomBedMap.setBedId(bedDTO.getBedId());
+                    roomBedMap.setBedCount(bedDTO.getBedCount());
+                    Example roomBedMapExample = new Example(RoomBedMap.class);
+                    roomBedMapExample.createCriteria().andEqualTo("roomId", room.getRoomId());
+                    // 更新旧床型
+                    roomBedMapper.updateByExampleSelective(roomBedMap, roomBedMapExample);
+                }
+                // 床型在原来的表中不存在
+                else{
+                    // 插入新床型
+                    roomBedMap.setRoomId(room.getRoomId());
+                    roomBedMap.setBedId(bedDTO.getBedId());
+                    roomBedMap.setBedCount(bedDTO.getBedCount());
+                    //
+                    roomBedMapper.insert(roomBedMap);
+                }
             }
         }
+
 
     }
 
@@ -206,6 +160,27 @@ public class RoomServiceImpl implements RoomService {
         // 删除房间
         roomMapper.deleteByPrimaryKey(roomId);
     }
+
+    @Override
+    public void deleteByHotelId(Integer hotelId) {
+        Example roomExample = new Example(Room.class);
+        roomExample.createCriteria()
+                .andEqualTo("hotelId", hotelId);
+        List<Integer> roomIds =
+                roomMapper.selectByExample(roomExample).stream()
+                        .map(Room::getRoomId).distinct().collect(Collectors.toList());
+        //如果有房间, 才进行删除'房间'，'房间床联系'操作
+        if(roomIds.size() > 0){
+            Example bedExample = new Example(RoomBedMap.class);
+            bedExample.createCriteria()
+                    .andIn("roomId", roomIds);
+            // 删除房间和床的联系
+            roomBedMapper.deleteByExample(bedExample);
+            // 删除房间
+            roomMapper.deleteByExample(roomExample);
+        }
+    }
+
     private List<RoomDTO> getRoomDTOs(List<Room> rooms){
         return rooms.stream().map(this::getRoomDTO).collect(Collectors.toList());
     }
@@ -213,12 +188,14 @@ public class RoomServiceImpl implements RoomService {
     private RoomDTO getRoomDTO(Room room){
         RoomDTO roomDTO = new RoomDTO();
         BeanUtils.copyProperties(room, roomDTO);
-
+        // 写入BedService中了
+/*
         // 获取roomBedMap
         Example roomBedMapExample = new Example(RoomBedMap.class);
         roomBedMapExample.createCriteria()
                 .andEqualTo("roomId", room.getRoomId());
         List<RoomBedMap> roomBedMaps = roomBedMapper.selectByExample(roomBedMapExample);
+        // 获取Bed
         if(roomBedMaps.size() > 0){
             // 通过roomId找到该room的所有床型
             List<Integer> bedIds = roomBedMaps.stream().map(RoomBedMap::getBedId).distinct().collect(Collectors.toList());
@@ -237,7 +214,57 @@ public class RoomServiceImpl implements RoomService {
                 return bedDTO;
             }).collect(Collectors.toList());
             roomDTO.setBeds(bedDTOs);
-        }
+        }*/
         return roomDTO;
     }
+
+    // todo 实际应该修改使用RoomExampleDTO来筛选, 有太多条件单纯使用Room的数据无法解决
+    private Example createExample(Room room) {
+        Example example = new Example(Room.class);
+        Example.Criteria criteria = example.createCriteria();
+        if(room.getHotelId() != null)
+        {
+            criteria.andEqualTo("hotelId", room.getHotelId());
+        }
+        if(!StringUtils.isEmpty(room.getRoomName())){
+            criteria.andLike("roomName", "%" + room.getRoomName() + "%");
+        }
+        // todo 应该是个范围
+        if(room.getRoomPrice() != null){
+            criteria.andLessThanOrEqualTo("roomPrice", room.getRoomPrice());
+        }
+        // todo 查找空余房间? 应该需要更加复杂的算法
+        if(room.getRoomRemaining() != null){
+            criteria.andGreaterThan("roomRemaining", room.getRoomRemaining());
+        }
+        if(room.getRoomCancel() != null){
+            criteria.andEqualTo("roomCancel", room.getRoomCancel());
+        }
+        // todo 应该是个范围
+        if(room.getRoomSize() != null){
+            criteria.andGreaterThan("roomSize", room.getRoomSize());
+        }
+        if(room.getRoomBookMax() != null){
+            criteria.andGreaterThanOrEqualTo("roomBookMax", room.getRoomBookMax());
+        }
+        if(room.getRoomWifi() != null){
+            criteria.andEqualTo("roomWifi", room.getRoomWifi());
+        }
+        // 加床条件筛选
+        if(room.getRoomBedAdd() != null){
+            BigDecimal i = room.getRoomBedAdd();
+            // 判断——不想加床
+            if(i.equals(BigDecimal.valueOf(-1)))
+            {
+                criteria.andEqualTo("roomBedAdd", i);
+            }
+            // ——想要加床
+            else{
+                criteria.andGreaterThanOrEqualTo("roomBedAdd", 0)
+                        .andLessThanOrEqualTo("roomBedAdd", i);
+            }
+        }
+        return example;
+    }
+
 }

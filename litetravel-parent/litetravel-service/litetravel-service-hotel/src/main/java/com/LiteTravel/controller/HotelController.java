@@ -1,9 +1,11 @@
 package com.LiteTravel.controller;
 
+import com.LiteTravel.DTO.BedDTO;
 import com.LiteTravel.DTO.HotelDTO;
 import com.LiteTravel.DTO.RoomDTO;
 import com.LiteTravel.hotel.pojo.Hotel;
 import com.LiteTravel.hotel.pojo.Room;
+import com.LiteTravel.service.BedService;
 import com.LiteTravel.service.HotelService;
 import com.LiteTravel.service.RoomService;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +26,9 @@ public class HotelController {
 
     @Autowired
     RoomService roomService;
+
+    @Autowired
+    BedService bedService;
 
     @GetMapping
     @ResponseBody
@@ -81,7 +86,15 @@ public class HotelController {
     @PostMapping
     @ResponseBody
     public Result add(@RequestBody HotelDTO hotel) {
-        hotelService.add(hotel);
+        Integer hotelId = hotelService.add(hotel);
+        // 添加房间信息
+        if(hotel.getRooms() != null){
+            for (RoomDTO roomDTO: hotel.getRooms()){
+                /* 设置HotelId */
+                roomDTO.setHotelId(hotelId);
+                roomService.add(roomDTO);
+            }
+        }
         return new Result(true, StatusCode.OK, "增加成功");
     }
     @PutMapping("/{hotelId}")
@@ -89,11 +102,19 @@ public class HotelController {
     public Result update(@PathVariable("hotelId") Integer hotelId, @RequestBody HotelDTO hotel){
         hotel.setHotelId(hotelId);
         hotelService.update(hotel);
+        /* 更新房间信息 */
+        if(hotel.getRooms() != null){
+            for (RoomDTO roomDTO: hotel.getRooms()){
+                roomDTO.setHotelId(hotelId);
+                roomService.update(roomDTO);
+            }
+        }
         return new Result(true, StatusCode.OK, "修改成功");
     }
     @DeleteMapping("/{hotelId}")
     @ResponseBody
     public Result delete(@PathVariable("hotelId") Integer hotelId){
+        roomService.deleteByHotelId(hotelId);
         hotelService.delete(hotelId);
         return new Result(true, StatusCode.OK, "删除成功");
     }
@@ -109,6 +130,10 @@ public class HotelController {
             BeanUtils.copyProperties(rooms.get(0), room);
         }
         room.setHotelId(hotelId);
-        return roomService.findList(room);
+        List<RoomDTO> roomDTOs = roomService.findList(room);
+        for (RoomDTO roomDTO : roomDTOs) {
+            roomDTO.setBeds(bedService.findListByRoomId(roomDTO.getRoomId()));
+        }
+        return roomDTOs;
     }
 }

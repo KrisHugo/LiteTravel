@@ -3,6 +3,7 @@ package com.LiteTravel.service;
 import com.LiteTravel.DTO.HotelDTO;
 import com.LiteTravel.hotel.pojo.Hotel;
 import com.github.pagehelper.PageInfo;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -34,13 +35,15 @@ public interface HotelService {
 
     /*
      * 增加
+     * 返回酒店Id
      * */
-    void add(HotelDTO hotel);
+    Integer add(HotelDTO hotel);
 
     /*
      * 修改
+     * 返回酒店Id
      * */
-    void update(HotelDTO hotel);
+    Integer update(HotelDTO hotel);
 
     /*
      * 删除

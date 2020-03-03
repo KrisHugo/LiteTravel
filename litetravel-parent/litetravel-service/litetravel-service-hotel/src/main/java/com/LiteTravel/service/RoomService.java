@@ -44,7 +44,11 @@ public interface RoomService {
     void update(RoomDTO room);
 
     /*
-     * 删除
+     * 主键Id筛选删除
      * */
     void delete(Integer id);
+    /*
+     * 酒店Id筛选删除
+     * */
+    void deleteByHotelId(Integer hotelId);
 }

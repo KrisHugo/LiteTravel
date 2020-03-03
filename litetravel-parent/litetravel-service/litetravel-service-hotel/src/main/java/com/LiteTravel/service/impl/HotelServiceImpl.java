@@ -1,12 +1,7 @@
 package com.LiteTravel.service.impl;
 
-import com.LiteTravel.DTO.BedDTO;
 import com.LiteTravel.DTO.HotelDTO;
-import com.LiteTravel.DTO.RoomDTO;
-import com.LiteTravel.hotel.pojo.Bed;
 import com.LiteTravel.hotel.pojo.Hotel;
-import com.LiteTravel.hotel.pojo.Room;
-import com.LiteTravel.hotel.pojo.RoomBedMap;
 import com.LiteTravel.mapper.*;
 import com.LiteTravel.region.pojo.Region;
 import com.LiteTravel.service.HotelService;
@@ -71,13 +66,15 @@ public class HotelServiceImpl implements HotelService {
     }
     /*
     * 增删改中仍有Room和Bed的冗余代码, 在考虑要怎么优化
+    * @Return
     * */
     @Override
-    public void add(HotelDTO hotelDTO) {
+    public Integer add(HotelDTO hotelDTO) {
         Hotel hotel = new Hotel();
         // 不知道有没有效果
         BeanUtils.copyProperties(hotelDTO, hotel);
         hotelMapper.insertSelective(hotel);
+/*
         // 添加房间信息
         if(hotelDTO.getRooms() != null){
             for (RoomDTO roomDTO: hotelDTO.getRooms()) {
@@ -110,14 +107,16 @@ public class HotelServiceImpl implements HotelService {
                 }
             }
         }
-
+*/
+        return hotel.getHotelId();
     }
 
     @Override
-    public void update(HotelDTO hotelDTO) {
+    public Integer update(HotelDTO hotelDTO) {
         Hotel hotel = new Hotel();
         BeanUtils.copyProperties(hotelDTO, hotel);
         hotelMapper.updateByPrimaryKeySelective(hotel);
+/*
         // 此处其实应该修改到RoomService中, 暂时先写在此处
         // 若没有房间, 则直接跳过
         if(hotelDTO.getRooms() != null){
@@ -172,12 +171,14 @@ public class HotelServiceImpl implements HotelService {
 
             }
         }
-
+*/
+        return hotel.getHotelId();
     }
+    // 将房间和房间与床的联系抽取至RoomService
     // 需要删除酒店, 房间, 以及与床的联系
     @Override
     public void delete(Integer hotelId) {
-        // 查询所有房间
+/*        // 查询所有房间
         Example roomExample = new Example(Room.class);
         roomExample.createCriteria()
                 .andEqualTo("hotelId", hotelId);
@@ -193,7 +194,7 @@ public class HotelServiceImpl implements HotelService {
             roomBedMapper.deleteByExample(bedExample);
             // 删除房间
             roomMapper.deleteByExample(roomExample);
-        }
+        }*/
         // 删除酒店本身
         hotelMapper.deleteByPrimaryKey(hotelId);
     }
