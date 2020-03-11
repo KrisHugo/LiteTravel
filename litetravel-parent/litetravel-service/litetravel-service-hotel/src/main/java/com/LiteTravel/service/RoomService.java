@@ -1,6 +1,6 @@
 package com.LiteTravel.service;
 
-import com.LiteTravel.DTO.RoomDTO;
+import com.LiteTravel.hotel.DTO.RoomDTO;
 import com.LiteTravel.hotel.pojo.Room;
 import com.github.pagehelper.PageInfo;
 

@@ -1,6 +1,6 @@
 package com.LiteTravel.service.impl;
 
-import com.LiteTravel.DTO.HotelDTO;
+import com.LiteTravel.hotel.DTO.HotelDTO;
 import com.LiteTravel.hotel.pojo.Hotel;
 import com.LiteTravel.mapper.*;
 import com.LiteTravel.region.pojo.Region;

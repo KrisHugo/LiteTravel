@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bed")
+@CrossOrigin
 public class BedController {
     @Autowired
     BedService bedService;
@@ -48,15 +49,15 @@ public class BedController {
     }
     @PostMapping
     @ResponseBody
-    public Result add(@RequestBody Bed hotel) {
-        bedService.add(hotel);
+    public Result add(@RequestBody Bed bed) {
+        bedService.add(bed);
         return new Result(true, StatusCode.OK, "增加成功");
     }
     @PutMapping("/{bedId}")
     @ResponseBody
-    public Result update(@PathVariable("bedId") Integer bedId, @RequestBody Bed hotel){
-        hotel.setBedId(bedId);
-        bedService.update(hotel);
+    public Result update(@PathVariable("bedId") Integer bedId, @RequestBody Bed bed){
+        bed.setBedId(bedId);
+        bedService.update(bed);
         return new Result(true, StatusCode.OK, "修改成功");
     }
     @DeleteMapping("/{bedId}")

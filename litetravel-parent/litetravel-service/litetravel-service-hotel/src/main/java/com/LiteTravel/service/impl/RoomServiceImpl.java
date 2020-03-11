@@ -1,7 +1,7 @@
 package com.LiteTravel.service.impl;
 
-import com.LiteTravel.DTO.BedDTO;
-import com.LiteTravel.DTO.RoomDTO;
+import com.LiteTravel.hotel.DTO.BedDTO;
+import com.LiteTravel.hotel.DTO.RoomDTO;
 import com.LiteTravel.hotel.pojo.Bed;
 import com.LiteTravel.hotel.pojo.Room;
 import com.LiteTravel.hotel.pojo.RoomBedMap;
@@ -19,7 +19,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,10 +127,11 @@ public class RoomServiceImpl implements RoomService {
                 roomBedMapExist.createCriteria().andEqualTo("roomId", room.getRoomId())
                         .andEqualTo("bedId", bedDTO.getBedId());
                 if(roomBedMapper.selectByExample(roomBedMapExist).size() > 0){
-                    roomBedMap.setBedId(bedDTO.getBedId());
                     roomBedMap.setBedCount(bedDTO.getBedCount());
                     Example roomBedMapExample = new Example(RoomBedMap.class);
-                    roomBedMapExample.createCriteria().andEqualTo("roomId", room.getRoomId());
+                    roomBedMapExample.createCriteria()
+                            .andEqualTo("roomId", room.getRoomId())
+                            .andEqualTo("bedId", bedDTO.getBedId());
                     // 更新旧床型
                     roomBedMapper.updateByExampleSelective(roomBedMap, roomBedMapExample);
                 }
@@ -146,8 +146,6 @@ public class RoomServiceImpl implements RoomService {
                 }
             }
         }
-
-
     }
 
     @Override
@@ -169,7 +167,7 @@ public class RoomServiceImpl implements RoomService {
         List<Integer> roomIds =
                 roomMapper.selectByExample(roomExample).stream()
                         .map(Room::getRoomId).distinct().collect(Collectors.toList());
-        //如果有房间, 才进行删除'房间'，'房间床联系'操作
+        //如果有房间, 才进行删除'房间'，'房间床联系'操作, 并不直接删除床, 因此不加入至BedService?
         if(roomIds.size() > 0){
             Example bedExample = new Example(RoomBedMap.class);
             bedExample.createCriteria()

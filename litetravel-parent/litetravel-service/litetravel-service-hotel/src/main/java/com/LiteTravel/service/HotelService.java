@@ -1,9 +1,8 @@
 package com.LiteTravel.service;
 
-import com.LiteTravel.DTO.HotelDTO;
+import com.LiteTravel.hotel.DTO.HotelDTO;
 import com.LiteTravel.hotel.pojo.Hotel;
 import com.github.pagehelper.PageInfo;
-import io.swagger.models.auth.In;
 
 import java.util.List;
 

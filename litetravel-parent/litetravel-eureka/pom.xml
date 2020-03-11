@@ -10,12 +10,29 @@
     <modelVersion>4.0.0</modelVersion>
     <description>微服务注册中心</description>
     <artifactId>litetravel-eureka</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
+        <!-- EurekaServer -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

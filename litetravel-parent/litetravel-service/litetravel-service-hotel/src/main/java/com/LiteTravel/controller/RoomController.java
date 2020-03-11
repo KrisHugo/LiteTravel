@@ -1,7 +1,8 @@
 package com.LiteTravel.controller;
 
-import com.LiteTravel.DTO.RoomDTO;
+import com.LiteTravel.hotel.DTO.RoomDTO;
 import com.LiteTravel.hotel.pojo.Room;
+import com.LiteTravel.service.BedService;
 import com.LiteTravel.service.RoomService;
 import com.github.pagehelper.PageInfo;
 import entity.Result;
@@ -19,35 +20,49 @@ public class RoomController {
 
     @Autowired
     RoomService roomService;
-
+    @Autowired
+    BedService bedService;
     @GetMapping
     @ResponseBody
     public Result<List<RoomDTO>> findAll(){
         List<RoomDTO> rooms = roomService.findAll();
+        for (RoomDTO roomDTO : rooms) {
+            roomDTO.setBeds(bedService.findListByRoomId(roomDTO.getRoomId()));
+        }
         return new Result<>(true, StatusCode.OK, "查询成功", rooms);
     }
     @PostMapping("/search")
     @ResponseBody
     public Result<List<RoomDTO>> findList(@RequestBody Room room){
         List<RoomDTO> rooms = roomService.findList(room);
+        for (RoomDTO roomDTO : rooms) {
+            roomDTO.setBeds(bedService.findListByRoomId(roomDTO.getRoomId()));
+        }
         return new Result<>(true, StatusCode.OK, "条件查询成功", rooms);
     }
     @GetMapping("/search/{page}/{size}")
     @ResponseBody
     public Result<PageInfo<RoomDTO>> findPage(@PathVariable("page") Integer page, @PathVariable("size") Integer size){
         PageInfo<RoomDTO> rooms = roomService.findPage(page, size);
+        for (RoomDTO roomDTO : rooms.getList()) {
+            roomDTO.setBeds(bedService.findListByRoomId(roomDTO.getRoomId()));
+        }
         return new Result<>(true, StatusCode.OK, "分页查询成功", rooms);
     }
     @PostMapping("/search/{page}/{size}")
     @ResponseBody
     public Result<PageInfo<RoomDTO>> findPage(@PathVariable("page") Integer page, @PathVariable("size") Integer size, @RequestBody Room room){
         PageInfo<RoomDTO> rooms = roomService.findPage(page, size, room);
+        for (RoomDTO roomDTO : rooms.getList()) {
+            roomDTO.setBeds(bedService.findListByRoomId(roomDTO.getRoomId()));
+        }
         return new Result<>(true, StatusCode.OK, "分页条件查询成功", rooms);
     }
     @GetMapping("/{roomId}")
     @ResponseBody
     public Result<RoomDTO> findAll(@PathVariable("roomId") Integer roomId){
         RoomDTO room = roomService.findById(roomId);
+        room.setBeds(bedService.findListByRoomId(room.getRoomId()));
         return new Result<>(true, StatusCode.OK, "主键查询成功", room);
     }
     @PostMapping

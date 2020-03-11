@@ -1,0 +1,30 @@
+server:
+  port: 18085
+spring:
+  profiles:
+    active: prod
+  application:
+    name: search
+  data:
+    elasticsearch:
+      cluster-name: LT-application
+      cluster-nodes: 192.168.211.132:9300
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://172.16.0.4:7001/eureka
+feign:
+  hystrix:
+    enabled: true
+# ribbon和hystrix的超时设置
+ribbon:
+  ReadTimeOut: 300000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000

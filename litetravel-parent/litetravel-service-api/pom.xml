@@ -17,6 +17,7 @@
         <module>litetravel-service-region-api</module>
         <module>litetravel-service-blog-api</module>
         <module>litetravel-service-user-api</module>
+        <module>litetravel-service-search-api</module>
     </modules>
 
     <dependencies>

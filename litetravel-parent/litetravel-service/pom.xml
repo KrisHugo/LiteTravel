@@ -17,6 +17,8 @@
         <module>litetravel-service-region</module>
         <module>litetravel-service-file</module>
         <module>litetravel-service-user</module>
+        <module>litetravel-service-canal</module>
+        <module>litetravel-service-search</module>
     </modules>
 
     <dependencies>

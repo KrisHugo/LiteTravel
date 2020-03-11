@@ -42,6 +42,9 @@
         <table tableName="travel_user_account" domainObjectName="User">
             <generatedKey column="user_id" sqlStatement="JDBC"/>
         </table>
+        <table tableName="travel_user_real" domainObjectName="UserReal">
+            <generatedKey column="user_id" sqlStatement="JDBC"/>
+        </table>
         <!-- Hotel部分 -->
         <table tableName="travel_hotel" domainObjectName="Hotel">
             <generatedKey column="hotel_id" sqlStatement="JDBC"/>

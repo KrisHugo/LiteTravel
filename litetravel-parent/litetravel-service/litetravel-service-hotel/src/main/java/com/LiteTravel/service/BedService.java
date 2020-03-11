@@ -1,6 +1,6 @@
 package com.LiteTravel.service;
 
-import com.LiteTravel.DTO.BedDTO;
+import com.LiteTravel.hotel.DTO.BedDTO;
 import com.LiteTravel.hotel.pojo.Bed;
 import interfaces.BeanService;
 

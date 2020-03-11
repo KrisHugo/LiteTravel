@@ -1,19 +1,17 @@
 server:
   port: 18082
 spring:
+  profiles:
+    active: prod # 默认为生产环境, 而测试运行时需要在运行虚拟机参数中设置为dev
   application:
     name: hotel
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://122.51.98.193:3306/travel_database?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&allowMultiQueries=true
     username: root
     password: 888666
   main:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
 eureka:
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:7001/eureka
   instance:
     prefer-ip-address: true
 feign:

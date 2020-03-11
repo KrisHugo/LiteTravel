@@ -1,8 +1,7 @@
 package com.LiteTravel.controller;
 
-import com.LiteTravel.DTO.BedDTO;
-import com.LiteTravel.DTO.HotelDTO;
-import com.LiteTravel.DTO.RoomDTO;
+import com.LiteTravel.hotel.DTO.HotelDTO;
+import com.LiteTravel.hotel.DTO.RoomDTO;
 import com.LiteTravel.hotel.pojo.Hotel;
 import com.LiteTravel.hotel.pojo.Room;
 import com.LiteTravel.service.BedService;
@@ -15,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -34,9 +34,7 @@ public class HotelController {
     @ResponseBody
     public Result<List<HotelDTO>> findAll(){
         List<HotelDTO> hotels = hotelService.findAll();
-        for (HotelDTO h: hotels) {
-            h.setRooms(getRooms(h.getHotelId(), new HotelDTO()));
-        }
+        setRooms(hotels, new HotelDTO());
         return new Result<>(true, StatusCode.OK, "查询成功", hotels);
     }
     /*
@@ -48,18 +46,14 @@ public class HotelController {
         Hotel hotelExample = new Hotel();
         BeanUtils.copyProperties(hotelDTOExample, hotelExample);
         List<HotelDTO> hotels = hotelService.findList(hotelExample);
-        for (HotelDTO h: hotels) {
-            h.setRooms(getRooms(h.getHotelId(), hotelDTOExample));
-        }
+        setRooms(hotels, hotelDTOExample);
         return new Result<>(true, StatusCode.OK, "条件查询成功", hotels);
     }
     @GetMapping("/search/{page}/{size}")
     @ResponseBody
     public Result<PageInfo<HotelDTO>> findPage(@PathVariable("page") Integer page, @PathVariable("size") Integer size){
         PageInfo<HotelDTO> hotels = hotelService.findPage(page, size);
-        for (HotelDTO h: hotels.getList()) {
-            h.setRooms(getRooms(h.getHotelId(), new HotelDTO()));
-        }
+        setRooms(hotels.getList(), new HotelDTO());
         return new Result<>(true, StatusCode.OK, "分页查询成功", hotels);
     }
     /*
@@ -71,9 +65,7 @@ public class HotelController {
         Hotel hotelExample = new Hotel();
         BeanUtils.copyProperties(hotelDTOExample, hotelExample);
         PageInfo<HotelDTO> hotels = hotelService.findPage(page, size, hotelExample);
-        for (HotelDTO h: hotels.getList()) {
-            h.setRooms(getRooms(h.getHotelId(), hotelDTOExample));
-        }
+        setRooms(hotels.getList(), hotelDTOExample);
         return new Result<>(true, StatusCode.OK, "分页条件查询成功", hotels);
     }
     @GetMapping("/{hotelId}")
@@ -118,12 +110,27 @@ public class HotelController {
         hotelService.delete(hotelId);
         return new Result(true, StatusCode.OK, "删除成功");
     }
+
+    private void setRooms(List<HotelDTO> hotelDTOs, HotelDTO example){
+        Iterator<HotelDTO> itr = hotelDTOs.iterator();
+        while(itr.hasNext()){
+            HotelDTO next = itr.next();
+            List<RoomDTO> rooms = getRooms(next.getHotelId(), example);
+            if(rooms == null || rooms.size() == 0){
+                itr.remove();
+            }
+            else
+            {
+                next.setRooms(rooms);
+            }
+        }
+    }
     /*
     * 条件搜索房间
     * */
-    private List<RoomDTO> getRooms(Integer hotelId, HotelDTO hotel){
+    private List<RoomDTO> getRooms(Integer hotelId, HotelDTO hotelDTO){
         Room room = new Room();
-        List<RoomDTO> rooms = hotel.getRooms();
+        List<RoomDTO> rooms = hotelDTO.getRooms();
         if(rooms != null && rooms.size() > 0)
         {
             // 复制属性, 以满足查询需要
