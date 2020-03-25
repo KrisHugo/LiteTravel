@@ -1,0 +1,5 @@
+com\LiteTravel\hotel\pojo\Hotel.class
+com\LiteTravel\hotel\pojo\Room.class
+com\LiteTravel\hotel\pojo\Bed.class
+com\LiteTravel\hotel\pojo\RoomBedMap.class
+com\LiteTravel\hotel\pojo\HotelOrder.class

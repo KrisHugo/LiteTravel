@@ -1,0 +1,4 @@
+com\LiteTravel\controller\fileController.class
+com\LiteTravel\util\FastDFSUtil.class
+com\LiteTravel\file\FastDFSFile.class
+com\LiteTravel\FileApplication.class

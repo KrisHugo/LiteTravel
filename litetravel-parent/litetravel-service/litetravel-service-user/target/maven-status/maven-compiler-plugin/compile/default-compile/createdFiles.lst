@@ -1,0 +1,3 @@
+com\LiteTravel\User\mapper\UserMapper.class
+com\LiteTravel\mybatis\mapper\UserInfoMapper.class
+com\LiteTravel\UserApplication.class
