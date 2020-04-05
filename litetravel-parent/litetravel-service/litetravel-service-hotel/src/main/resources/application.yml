@@ -16,7 +16,23 @@ eureka:
     prefer-ip-address: true
 feign:
   hystrix:
-    enabled: true
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000
+# ribbon和hystrix的超时设置
+ribbon:
+  ReadTimeOut: 300000
+hystrix:
+  shareSecurityContext: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

@@ -1,6 +1,5 @@
 package com.LiteTravel.Search.Hotel.pojo;
 
-import com.LiteTravel.hotel.DTO.RoomDTO;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -10,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.util.List;
 
 @Data
-@Document(indexName = "hotelInfo", type = "docs")
+@Document(indexName = "hotel", type = "docs")
 public class HotelInfo {
     /*
     * type 类型, Text支持分词
@@ -31,8 +30,10 @@ public class HotelInfo {
     private String hotelPhone;
     @Field(type = FieldType.Integer)
     private Integer hotelReplyLevel;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private Integer hotelAddress;
+    @Field(type = FieldType.Text, analyzer = "ik_smart")
+    private String hotelAddressString;
     @Field(type = FieldType.Text, analyzer = "ik_smart")
     private String hotelAddressSpecific;
     @Field(type = FieldType.Text, index = false)
@@ -41,6 +42,6 @@ public class HotelInfo {
     private Integer hotelReplyCount;
     @Field(type = FieldType.Text, analyzer = "ik_smart")
     private String hotelDescription;
-
+    @Field(type = FieldType.Nested)
     private List<RoomInfo> rooms;
 }

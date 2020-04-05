@@ -6,11 +6,12 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-@Document(indexName = "roomInfo", type = "docs")
-public class RoomInfo {
+@Document(indexName = "room", type = "docs")
+public class RoomInfo implements Serializable {
     @Id
     private Integer roomId;
     @Field(type = FieldType.Integer)
@@ -36,6 +37,6 @@ public class RoomInfo {
     private Double roomBedAdd;
     @Field(type = FieldType.Text, analyzer = "ik_smart")
     private String roomDescription;
-
+    @Field(type = FieldType.Nested)
     private List<BedInfo> beds;
 }

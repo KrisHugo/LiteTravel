@@ -6,10 +6,12 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.io.Serializable;
+
 
 @Data
-@Document(indexName = "bedInfo", type = "docs")
-public class BedInfo {
+@Document(indexName = "bed", type = "docs")
+public class BedInfo implements Serializable {
     @Id
     private Integer bedId;
     @Field(type = FieldType.Text, analyzer = "ik_smart")
