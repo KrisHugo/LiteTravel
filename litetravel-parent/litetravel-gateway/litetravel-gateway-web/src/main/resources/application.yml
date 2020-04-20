@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: gateway-web
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]': #匹配所有请求
+            allowedOrigins: "*" # 跨域处理，允许所有的域
+            allowedMethods: # 支持的方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      routes:
+        - id: litetravel_hotels_route
+          uri: http://127.0.0.1:18082
+          pridicates: # 路由断言
+            # - Host=www.baidu.com # 域名规则
+            - Path=/hotel** # 路径规则
+          filters:
+          # 去掉第一个路径, 请求路径以 / 区分
+           # - StripPrefix=1
+          # 隐藏用户请求/hotel 并将该请求路由到http://localhost:18082微服务
+            - PrefixPath=/hotel
+server:
+  port: 8001
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka
+management:
+  endpoint:
+    gateway:
+      enabled: true
+    web:
+      exposure:
+        include: true

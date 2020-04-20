@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/search")
+@RequestMapping(value = "/search/hotel")
 public class HotelInfoController {
     @Autowired
     private HotelInfoService hotelInfoService;
